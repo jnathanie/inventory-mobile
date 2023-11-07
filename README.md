@@ -1,5 +1,5 @@
 <details>
-<summary>Tugas 2</summary>
+<summary>Tugas 7</summary>
 
 # Tugas 7
 ## Apa perbedaan utama antara stateless dan stateful widget dalam konteks pengembangan aplikasi Flutter?
