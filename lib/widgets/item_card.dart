@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:inventory/screens/inventorylist_form.dart';
 import 'package:inventory/screens/item_list_page.dart';
+import 'package:inventory/screens/list_item.dart';
+import 'package:inventory/screens/login.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 
 class InventoryItem {
@@ -18,10 +22,11 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
     return Material(
       color: item.color,
       child: InkWell(
-        onTap: () {
+        onTap: () async {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(SnackBar(
@@ -32,19 +37,30 @@ class ItemCard extends StatelessWidget {
             MaterialPageRoute(builder: (context) => const ItemFormPage()));
           }
   
-          if (item.name == "Lihat Item") {
-            List<InventoryListItem> getDummyItems() {
-              return [
-                InventoryListItem("Laptop", 2, "Bagus"),
-                InventoryListItem("Earphone", 1, "Canggih"),
-              ];
-            }
-            Navigator.push(
+          else if (item.name == "Lihat Item") {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const ProductPage()));
+          }
+
+          else if (item.name == "Logout") {
+            final response = await request.logout(
+                // TODO: Ganti URL dan jangan lupa tambahkan trailing slash (/) di akhir URL!
+                "https://jocelyn-nathanie-tugas.pbp.cs.ui.ac.id/auth/logout/");
+            String message = response["message"];
+            if (response['status']) {
+              String uname = response["username"];
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text("$message Sampai jumpa, $uname."),
+              ));
+              Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => ItemListPage(items: getDummyItems()),
-                ),
+                MaterialPageRoute(builder: (context) => const LoginPage()),
               );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text("$message"),
+              ));
+            }
           }
         },
         child: Container(
